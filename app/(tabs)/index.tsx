@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -9,7 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 /** ---------------- Types ---------------- */
@@ -50,8 +51,16 @@ const ICEBREAKERS = [
   "If you had 10 minutes of fame, how would you use it?",
 ];
 
-async function getMockLocation() {
-  return { latitude: 14.676, longitude: 121.0437 }; // Manila center
+async function getDeviceLocation() {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== "granted") {
+    throw new Error("Permission to access location was denied");
+  }
+  let location = await Location.getCurrentPositionAsync({});
+  return {
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+  };
 }
 
 /** ---------------- In-memory Backend ---------------- */
@@ -119,9 +128,15 @@ function SparkApp() {
 
   useEffect(() => {
     (async () => {
-      const loc = await getMockLocation();
-      setMyLocation(loc);
-      loadNearby(loc);
+      try {
+        const loc = await getDeviceLocation();
+        setMyLocation(loc);
+        loadNearby(loc);
+      } catch (e) {
+        // Fallback: Manila center if permission denied or error
+        setMyLocation({ latitude: 14.676, longitude: 121.0437 });
+        loadNearby({ latitude: 14.676, longitude: 121.0437 });
+      }
     })();
 
     const t: ReturnType<typeof setInterval> = setInterval(() => {
@@ -274,7 +289,14 @@ function CreateGroupView({
   const [icebreaker, setIcebreaker] = useState(ICEBREAKERS[0]);
 
   async function create() {
-    const loc = myLocation || (await getMockLocation());
+    let loc = myLocation;
+    if (!loc) {
+      try {
+        loc = await getDeviceLocation();
+      } catch {
+        loc = { latitude: 14.676, longitude: 121.0437 };
+      }
+    }
     const id = uuid();
     const now = Date.now();
     const expiresAt = now + 24 * 60 * 60 * 1000;
