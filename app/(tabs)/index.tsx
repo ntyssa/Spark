@@ -1,18 +1,18 @@
-// app/(tabs)/index.tsx
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
+  FlatList,
   SafeAreaView,
-  View,
+  StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
-  Switch,
-  StyleSheet,
-  Alert,
+  View
 } from "react-native";
 
-/** Types */
+/** ---------------- Types ---------------- */
 type Group = {
   id: string;
   name: string;
@@ -31,10 +31,9 @@ type Message = {
   anonymous: boolean;
 };
 
-/** Lightweight UUID generator for demo */
+/** ---------------- Helpers ---------------- */
 const uuid = () => Math.random().toString(36).slice(2, 9);
 
-/** Utility: human-friendly remaining time */
 function timeLeft(expiryTs: number) {
   const diff = Math.max(0, expiryTs - Date.now());
   const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -43,7 +42,6 @@ function timeLeft(expiryTs: number) {
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 
-/** Icebreakers */
 const ICEBREAKERS = [
   "Share a song you're vibing to right now.",
   "What's the one emoji that describes your day?",
@@ -52,12 +50,11 @@ const ICEBREAKERS = [
   "If you had 10 minutes of fame, how would you use it?",
 ];
 
-/** Mock location helper (replace with expo-location later) */
 async function getMockLocation() {
   return { latitude: 14.676, longitude: 121.0437 }; // Manila center
 }
 
-/** In-memory backend (prototype only) */
+/** ---------------- In-memory Backend ---------------- */
 const backend: {
   groups: Group[];
   messages: Record<string, Message[]>;
@@ -98,16 +95,21 @@ const backend: {
     });
   },
 };
-
-/** Periodic cleanup (module-level prototype timer) */
 setInterval(() => backend.removeExpired(), 30000);
 
-/** ---------- Page component (Expo Router expects a default export) ---------- */
+/** ---------------- Main Page ---------------- */
 export default function Page(): JSX.Element {
-  return <SparkApp />;
+  return (
+    <LinearGradient
+      colors={["#fff6f6", "#ffe6e6", "#f9fafc"]}
+      style={{ flex: 1 }}
+    >
+      <SparkApp />
+    </LinearGradient>
+  );
 }
 
-/** The prototype App component */
+/** ---------------- App Component ---------------- */
 function SparkApp() {
   const [view, setView] = useState<"discover" | "create" | "chat">("discover");
   const [groups, setGroups] = useState<Group[]>([]);
@@ -153,12 +155,17 @@ function SparkApp() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Spark</Text>
+        <Text style={styles.title}>🔥 Spark</Text>
         <Text style={styles.subtitle}>Connections that light up, then fade.</Text>
       </View>
 
       {view === "discover" && (
-        <DiscoverView groups={groups} onCreate={openCreate} onJoin={openChat} myLocation={myLocation} />
+        <DiscoverView
+          groups={groups}
+          onCreate={openCreate}
+          onJoin={openChat}
+          myLocation={myLocation}
+        />
       )}
 
       {view === "create" && (
@@ -185,7 +192,7 @@ function SparkApp() {
   );
 }
 
-/** ---------- Discover View ---------- */
+/** ---------------- Discover View ---------------- */
 function DiscoverView({
   groups,
   onCreate,
@@ -199,33 +206,44 @@ function DiscoverView({
 }) {
   return (
     <View style={styles.section}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <View style={styles.discoverHeader}>
         <Text style={styles.h2}>Nearby Sparks</Text>
-        <TouchableOpacity onPress={onCreate} style={styles.primaryBtn}>
-          <Text style={{ color: "#fff" }}>New Spark</Text>
+        <TouchableOpacity onPress={onCreate} style={styles.primaryBtn} activeOpacity={0.8}>
+          <Text style={{ color: "#fff", fontWeight: "600" }}>+ New Spark</Text>
         </TouchableOpacity>
       </View>
 
       <FlatList
         data={groups}
         keyExtractor={(i) => i.id}
-        ListEmptyComponent={<Text style={{ marginTop: 20 }}>No Sparks nearby — create one!</Text>}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            No Sparks nearby — create one!
+          </Text>
+        }
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => onJoin(item)}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => onJoin(item)}
+            activeOpacity={0.85}
+          >
             <View style={{ flex: 1 }}>
               <Text style={styles.cardTitle}>{item.name}</Text>
               <Text style={styles.cardMeta}>Expires in {timeLeft(item.expiresAt)}</Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={{ fontSize: 12 }}>{item.anonymousAllowed ? "Anonymous allowed" : "Named only"}</Text>
-              <Text style={{ fontSize: 12 }}>{formatDistance(item, myLocation)}</Text>
+              <Text style={item.anonymousAllowed ? styles.anonAllowed : styles.namedOnly}>
+                {item.anonymousAllowed ? "Anonymous allowed" : "Named only"}
+              </Text>
+              <Text style={styles.distanceText}>{formatDistance(item, myLocation)}</Text>
             </View>
           </TouchableOpacity>
         )}
+        contentContainerStyle={{ paddingBottom: 24 }}
       />
 
-      <View style={{ marginTop: 10 }}>
-        <Text style={{ fontSize: 12, color: "#666" }}>
+      <View style={{ marginTop: 16 }}>
+        <Text style={styles.tipText}>
           Tip: Sparks auto-expire 24 hours after creation.
         </Text>
       </View>
@@ -241,7 +259,7 @@ function formatDistance(g: Group | null, loc: { latitude: number; longitude: num
   return `${km} km away`;
 }
 
-/** ---------- Create Group View ---------- */
+/** ---------------- Create Group View ---------------- */
 function CreateGroupView({
   onBack,
   onCreated,
@@ -277,7 +295,7 @@ function CreateGroupView({
   return (
     <View style={styles.section}>
       <TouchableOpacity onPress={onBack} style={{ marginBottom: 10 }}>
-        <Text style={{ color: "#007aff" }}>◀ Back</Text>
+        <Text style={styles.backBtn}>◀ Back</Text>
       </TouchableOpacity>
 
       <Text style={styles.h2}>Create a Spark</Text>
@@ -287,41 +305,35 @@ function CreateGroupView({
         value={name}
         onChangeText={setName}
         style={styles.input}
+        placeholderTextColor="#bbb"
       />
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginVertical: 8,
-        }}
-      >
+      <View style={styles.anonSwitchRow}>
         <Text>Allow anonymous posts</Text>
         <Switch value={anonAllowed} onValueChange={setAnonAllowed} />
       </View>
 
       <Text style={{ marginTop: 8 }}>Icebreaker</Text>
       <View style={{ marginVertical: 8 }}>
-        <Text style={{ padding: 8, backgroundColor: "#f2f2f2", borderRadius: 6 }}>{icebreaker}</Text>
+        <Text style={styles.icebreakerBox}>{icebreaker}</Text>
         <TouchableOpacity
           onPress={() =>
             setIcebreaker(ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)])
           }
           style={{ marginTop: 6 }}
         >
-          <Text style={{ color: "#007aff" }}>Shuffle icebreaker</Text>
+          <Text style={styles.shuffleBtn}>Shuffle icebreaker</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={create} style={styles.primaryBtn}>
-        <Text style={{ color: "#fff" }}>Create Spark</Text>
+      <TouchableOpacity onPress={create} style={styles.primaryBtn} activeOpacity={0.8}>
+        <Text style={{ color: "#fff", fontWeight: "600" }}>Create Spark</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-/** ---------- Chat View ---------- */
+/** ---------------- Chat View ---------------- */
 function ChatView({
   group,
   onBack,
@@ -367,93 +379,82 @@ function ChatView({
 
   return (
     <View style={styles.section}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <TouchableOpacity onPress={onBack}>
-          <Text style={{ color: "#007aff" }}>◀ Sparks</Text>
+      <View style={styles.chatHeader}>
+        <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
+          <Text style={styles.backBtn}>◀ Sparks</Text>
         </TouchableOpacity>
         <View style={{ alignItems: "center" }}>
-          <Text style={{ fontWeight: "600" }}>{group.name}</Text>
-          <Text style={{ fontSize: 12 }}>Expires in {timeLeft(group.expiresAt)}</Text>
+          <Text style={styles.chatTitle}>{group.name}</Text>
+          <Text style={styles.chatExpires}>Expires in {timeLeft(group.expiresAt)}</Text>
         </View>
         <View style={{ width: 48 }} />
       </View>
 
-      <View
-        style={{
-          marginTop: 8,
-          padding: 8,
-          backgroundColor: "#fff",
-          borderRadius: 6,
-          borderWidth: 1,
-          borderColor: "#eee",
-        }}
-      >
-        <Text style={{ fontSize: 13, color: "#333", marginBottom: 6 }}>
-          Icebreaker: {group.icebreaker}
+      <View style={styles.chatBox}>
+        <Text style={styles.icebreakerLabel}>
+          <Text style={{ fontWeight: "600" }}>Icebreaker:</Text> {group.icebreaker}
         </Text>
 
         <FlatList
           data={messages}
           keyExtractor={(m) => m.id}
-          style={{ maxHeight: 300 }}
+          style={{ maxHeight: 320 }}
           renderItem={({ item }) => (
-            <View style={[styles.message, item.anonymous ? styles.anonMessage : null]}>
-              <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                {item.anonymous ? "Anonymous" : item.displayName}
-              </Text>
-              <Text style={{ marginTop: 4 }}>{item.text}</Text>
-              <Text style={{ fontSize: 10, color: "#666", marginTop: 6 }}>
-                {new Date(item.createdAt).toLocaleTimeString()}
-              </Text>
+            <View
+              style={[
+                styles.message,
+                item.anonymous ? styles.anonMessage : styles.namedMessage,
+                { flexDirection: "row", alignItems: "flex-start" },
+              ]}
+            >
+              <View style={styles.avatarCircle}>
+                <Text style={{ color: "#fff", fontWeight: "700" }}>
+                  {item.anonymous
+                    ? "🤫"
+                    : (item.displayName || "G").slice(0, 1).toUpperCase()}
+                </Text>
+              </View>
+              <View style={{ flex: 1, marginLeft: 8 }}>
+                <Text style={item.anonymous ? styles.anonName : styles.namedName}>
+                  {item.anonymous ? "Anonymous" : item.displayName}
+                </Text>
+                <Text style={styles.messageText}>{item.text}</Text>
+                <Text style={styles.messageTime}>
+                  {new Date(item.createdAt).toLocaleTimeString()}
+                </Text>
+              </View>
             </View>
           )}
         />
 
-        <View style={{ marginTop: 8 }}>
+        <View style={{ marginTop: 10 }}>
           <TextInput
             placeholder="Your handle (optional)"
             value={nameHandle}
             onChangeText={setNameHandle}
             style={styles.input}
+            placeholderTextColor="#bbb"
           />
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <View style={styles.inputRow}>
             <TextInput
-              placeholder="Say something..."
+              placeholder="Say something…"
               value={text}
               onChangeText={setText}
               style={[styles.input, { flex: 1, marginRight: 8 }]}
+              placeholderTextColor="#bbb"
             />
-            <TouchableOpacity onPress={send} style={styles.primaryBtnSmall}>
-              <Text style={{ color: "#fff" }}>Send</Text>
+            <TouchableOpacity onPress={send} style={styles.primaryBtnSmall} activeOpacity={0.8}>
+              <Text style={{ color: "#fff", fontWeight: "600" }}>Send</Text>
             </TouchableOpacity>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 8,
-              justifyContent: "space-between",
-            }}
-          >
+          <View style={styles.anonSwitchRow}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Switch value={anon} onValueChange={setAnon} />
               <Text style={{ marginLeft: 8 }}>
                 {anon ? "Posting anonymously" : "Posting with handle"}
               </Text>
             </View>
-            <Text style={{ fontSize: 12, color: "#666" }}>Live updates • ephemeral</Text>
+            <Text style={styles.liveText}>Live updates • ephemeral</Text>
           </View>
         </View>
       </View>
@@ -461,51 +462,160 @@ function ChatView({
   );
 }
 
-/** Styles */
+/** ---------------- Styles ---------------- */
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 14, backgroundColor: "#fafafa" },
-  header: { marginBottom: 12 },
-  title: { fontSize: 32, fontWeight: "700" },
-  subtitle: { color: "#666" },
+  container: { flex: 1, padding: 14, backgroundColor: "transparent" },
+  header: {
+    marginBottom: 18,
+    alignItems: "center",
+    paddingTop: 10,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: "900",
+    color: "#ff6b6b",
+    letterSpacing: 1,
+    textShadowColor: "#fff0",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: { color: "#888", fontSize: 15, marginTop: 2 },
   section: { flex: 1 },
-  h2: { fontSize: 18, fontWeight: "700" },
+  h2: { fontSize: 20, fontWeight: "800", color: "#222" },
+  discoverHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
   primaryBtn: {
     backgroundColor: "#ff6b6b",
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    shadowColor: "#ff6b6b",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
   },
   primaryBtnSmall: {
     backgroundColor: "#ff6b6b",
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    shadowColor: "#ff6b6b",
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+    elevation: 1,
   },
   card: {
-    padding: 12,
+    padding: 16,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 14,
     marginVertical: 8,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#f5dede",
     flexDirection: "row",
     alignItems: "center",
+    shadowColor: "#ff6b6b",
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  cardTitle: { fontSize: 16, fontWeight: "700" },
-  cardMeta: { fontSize: 12, color: "#666" },
+  cardTitle: { fontSize: 17, fontWeight: "800", color: "#222" },
+  cardMeta: { fontSize: 12, color: "#888", marginTop: 2 },
+  anonAllowed: { fontSize: 12, color: "#ff6b6b", fontWeight: "600" },
+  namedOnly: { fontSize: 12, color: "#007aff", fontWeight: "600" },
+  distanceText: { fontSize: 12, color: "#888" },
+  emptyText: { marginTop: 32, color: "#bbb", textAlign: "center" },
+  tipText: { fontSize: 12, color: "#aaa", textAlign: "center" },
   input: {
     backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 10,
     marginVertical: 6,
     borderWidth: 1,
     borderColor: "#eee",
+    fontSize: 15,
   },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  anonSwitchRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  icebreakerBox: {
+    padding: 8,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 6,
+    color: "#333",
+    fontSize: 14,
+  },
+  shuffleBtn: { color: "#007aff", fontWeight: "600" },
+  backBtn: { color: "#007aff", fontWeight: "600", fontSize: 16 },
+  chatHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  chatTitle: { fontWeight: "700", fontSize: 16 },
+  chatExpires: { fontSize: 12, color: "#888" },
+  chatBox: {
+    marginTop: 8,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#eee",
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  icebreakerLabel: { fontSize: 13, color: "#333", marginBottom: 8 },
   message: {
     padding: 10,
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
+    borderRadius: 10,
     marginVertical: 6,
+    minHeight: 54,
+    shadowColor: "#000",
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  anonMessage: { backgroundColor: "#fffbe6" },
+  anonMessage: {
+    backgroundColor: "#fffbe6",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ff6b6b",
+  },
+  namedMessage: {
+    backgroundColor: "#f7f7f7",
+    borderLeftWidth: 4,
+    borderLeftColor: "#b2e6ff",
+  },
+  avatarCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: "#ff6b6b",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 2,
+    marginTop: 2,
+    shadowColor: "#ff6b6b",
+    shadowOpacity: 0.10,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  anonName: { fontSize: 12, fontWeight: "700", color: "#ff6b6b" },
+  namedName: { fontSize: 12, fontWeight: "700", color: "#333" },
+  messageText: { marginTop: 2, fontSize: 15 },
+  messageTime: { fontSize: 10, color: "#aaa", marginTop: 4 },
+  liveText: { fontSize: 12, color: "#aaa" },
 });
