@@ -1,50 +1,59 @@
-# Welcome to your Expo app 👋
+# 🔥 Spark
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Spark** is a new kind of social media app built around **ephemeral communities** — short-lived groups where people connect authentically without the pressure of permanent profiles.  
 
-## Get started
+Instead of chasing followers or curating a perfect feed, Spark lets you join or create temporary groups based on **events, places, moods, or goals**. After 24 hours, the community dissolves — leaving only the memories of real connections.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ✨ Why Spark?
+- **No Pressure:** No likes, follower counts, or clout chasing.  
+- **Authentic:** People share freely when the spotlight isn’t permanent.  
+- **In the Moment:** Join conversations that matter *right now*.  
+- **Temporary by Design:** Groups auto-expire after 24 hours.  
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🚀 Prototype Features (Implemented)
+This repo contains a **React Native prototype** of Spark.  
 
-In the output, you'll find options to open the app in a
+✅ **Core Implementations**  
+- 🔑 **Ephemeral Groups**: Each group auto-expires (`expiresAt`) and is deleted after 24h (background cleanup runs every 30s).  
+- 🌍 **Location-based Discovery**: Groups are tied to coordinates, with a nearby search (`listGroupsNearby(lat, lng, radiusKm)`). Current version uses `getMockLocation()` to simulate real GPS.  
+- 🎭 **Anonymous Posting**: When creating a group, you can allow anonymous posts. Chat view includes a toggle (`Switch`) to send messages anonymously.  
+- 🧩 **Icebreakers**: Groups can include icebreaker prompts. Prototype includes a built-in `ICEBREAKERS` array that shuffles suggestions.  
+- ⏳ **Countdown Timer**: Each group shows time left (`timeLeft()`) until it expires.  
+- 📡 **Live Chat Refresh**: Chat view refreshes every 3 seconds to simulate real-time updates.  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🧭 Roadmap (Next Steps)
+- [ ] Replace in-memory backend with **Firebase** or **Supabase** for persistence.  
+- [ ] Add **WebSockets** for true real-time messaging.  
+- [ ] Replace `getMockLocation()` with **device geolocation API**.  
+- [ ] Implement **push notifications** when new groups appear nearby.  
+- [ ] Add **mini-games & polls** for richer icebreakers.  
+- [ ] Polish UI with themes, avatars, and emojis.  
+- [ ] Deploy backend with **Dockerized microservices** for scalability.  
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🛠️ Tech Stack (Prototype)
+- **Frontend:** React Native (Expo)  
+- **Backend (Mock):** In-memory datastore (`backend.ts`)  
+- **Real-time Simulation:** `setInterval` refresh for messages  
+- **State Management:** React hooks (`useState`, `useEffect`)  
+- **UI Components:** React Native core primitives (`View`, `Text`, `TextInput`, `FlatList`, `Switch`, `TouchableOpacity`)  
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🎯 Use Cases
+- “Study grind room” for late-night students  
+- “Concert afterparty” for fans who just left a show  
+- “Stuck in traffic” group for commuters  
+- “Midnight motivation” circle for night owls  
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 💡 Tagline
+**Spark – Connections that light up, then fade.**
