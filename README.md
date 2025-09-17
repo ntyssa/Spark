@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+# 🔥 Spark
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Spark** is a new kind of social media app built around **ephemeral communities** — short-lived groups where people connect authentically without the pressure of permanent profiles.  
 
-## Get started
+Instead of chasing followers or curating a perfect feed, Spark lets you join or create temporary groups based on **events, places, moods, or goals**. After 24 hours, the community dissolves — leaving only the memories of real connections.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ✨ Why Spark?
+- **No Pressure:** No likes, follower counts, or clout chasing.  
+- **Authentic:** People share freely when the spotlight isn’t permanent.  
+- **In the Moment:** Join conversations that matter *right now*.  
+- **Temporary by Design:** Groups auto-expire after 24 hours.  
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🚀 Core Features
+- 🔑 **Auto-Expiry**: Communities vanish after 24 hours.  
+- 🌍 **Location-Aware**: Discover groups near you in real time.  
+- 🎭 **Flexible Identity**: Post anonymously or with your handle.  
+- 🧩 **Icebreakers**: Built-in games and prompts to spark conversations.  
+- 📡 **Live Vibe**: Feeds update instantly as people join in.  
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🎯 Use Cases
+- “Study grind room” for late-night students  
+- “Concert afterparty” for fans who just left a show  
+- “Stuck in traffic” group for commuters  
+- “Midnight motivation” circle for night owls  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Tech Vision
+- **Frontend:** React Native for cross-platform iOS/Android  
+- **Backend:** Node.js + WebSocket for real-time chat  
+- **Database:** Firebase or Supabase for speed + scalability  
+- **Infra:** Dockerized microservices for deployment  
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 🧭 Roadmap
+- [ ] Prototype group creation & expiry  
+- [ ] Location-based group discovery  
+- [ ] Anonymous posting option  
+- [ ] Icebreaker mini-games integration  
+- [ ] Beta launch (invite-only)  
+- [ ] Public release 🎉  
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 💡 Tagline
+**Spark – Connections that light up, then fade.**
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
